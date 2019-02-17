@@ -1379,7 +1379,7 @@
       "verb": "GET"
     },
     "info": {
-      "url": "/",
+      "url": "/_serverInfo",
       "verb": "GET"
     }
   },

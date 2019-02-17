@@ -120,6 +120,10 @@ impl Protocol for Http {
             request = request.json(&req.body());
         }
 
+        if !req.query_strings().is_empty() {
+            request = request.query(&req.query_strings());
+        }
+
         let response: KuzzleResponse = request.send()?.json()?;
         Ok(response)
     }

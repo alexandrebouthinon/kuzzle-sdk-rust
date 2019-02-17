@@ -7,6 +7,7 @@ pub struct KuzzleRequest {
     _index: Option<String>,
     _collection: Option<String>,
     _body: HashMap<String, Value>,
+    _query_strings: HashMap<String, Value>,
 }
 
 impl KuzzleRequest {
@@ -17,6 +18,7 @@ impl KuzzleRequest {
             _index: None,
             _collection: None,
             _body: HashMap::new(),
+            _query_strings: HashMap::new(),
         }
     }
 
@@ -40,6 +42,10 @@ impl KuzzleRequest {
         &self._body
     }
 
+    pub fn query_strings(&self) -> &HashMap<String, Value> {
+        &self._query_strings
+    }
+
     pub fn set_index(mut self, index: &str) -> Self {
         self._index = Some(index.to_string());
         self
@@ -47,6 +53,11 @@ impl KuzzleRequest {
 
     pub fn add_to_body(mut self, key: String, value: Value) -> Self {
         self._body.insert(key, value);
+        self
+    }
+
+    pub fn add_to_query_strings(mut self, key: String, value: Value) -> Self {
+        self._query_strings.insert(key, value);
         self
     }
 }
