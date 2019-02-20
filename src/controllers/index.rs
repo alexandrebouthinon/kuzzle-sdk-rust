@@ -3,7 +3,7 @@ use crate::types::{KuzzleRequest, QueryOptions, SdkError};
 use serde_json::to_value;
 use std::error::Error;
 
-pub struct IndexController<'a>(pub &'a Kuzzle);
+pub struct IndexController<'a>(pub &'a mut Kuzzle);
 
 impl<'a> IndexController<'a> {
     /// Create a new index in Kuzzl.
@@ -15,7 +15,7 @@ impl<'a> IndexController<'a> {
     /// use kuzzle_sdk::protocols::Http;
     /// use kuzzle_sdk::types::KuzzleOptions;
     ///
-    /// let kuzzle = Kuzzle::new(
+    /// let mut kuzzle = Kuzzle::new(
     ///     Http::new(
     ///         KuzzleOptions::new("localhost", 7512)
     ///     )
@@ -25,7 +25,7 @@ impl<'a> IndexController<'a> {
     ///
     /// ```
     ///
-    pub fn create(&self, index: &str) -> Result<(), Box<Error>> {
+    pub fn create(&'a mut self, index: &str) -> Result<(), Box<Error>> {
         if index.is_empty() {
             return Err(Box::new(SdkError::new(
                 "IndexController::create",
@@ -50,7 +50,7 @@ impl<'a> IndexController<'a> {
     /// use kuzzle_sdk::protocols::Http;
     /// use kuzzle_sdk::types::KuzzleOptions;
     ///
-    /// let kuzzle = Kuzzle::new(
+    /// let mut kuzzle = Kuzzle::new(
     ///     Http::new(
     ///         KuzzleOptions::new("localhost", 7512)
     ///     )
@@ -60,7 +60,7 @@ impl<'a> IndexController<'a> {
     ///
     /// ```
     ///
-    pub fn delete(&self, index: &str) -> Result<(), Box<Error>> {
+    pub fn delete(&'a mut self, index: &str) -> Result<(), Box<Error>> {
         if index.is_empty() {
             return Err(Box::new(SdkError::new(
                 "IndexController::delete",
@@ -85,7 +85,7 @@ impl<'a> IndexController<'a> {
     /// use kuzzle_sdk::protocols::Http;
     /// use kuzzle_sdk::types::KuzzleOptions;
     ///
-    /// let kuzzle = Kuzzle::new(
+    /// let mut kuzzle = Kuzzle::new(
     ///     Http::new(
     ///         KuzzleOptions::new("localhost", 7512)
     ///     )
@@ -95,7 +95,7 @@ impl<'a> IndexController<'a> {
     ///
     /// ```
     ///
-    pub fn exists(&self, index: &str) -> Result<bool, Box<Error>> {
+    pub fn exists(&'a mut self, index: &str) -> Result<bool, Box<Error>> {
         if index.is_empty() {
             return Err(Box::new(SdkError::new(
                 "IndexController::exists",
@@ -123,7 +123,7 @@ impl<'a> IndexController<'a> {
     /// use kuzzle_sdk::protocols::Http;
     /// use kuzzle_sdk::types::KuzzleOptions;
     ///
-    /// let kuzzle = Kuzzle::new(
+    /// let mut kuzzle = Kuzzle::new(
     ///     Http::new(
     ///         KuzzleOptions::new("localhost", 7512)
     ///     )
@@ -133,7 +133,7 @@ impl<'a> IndexController<'a> {
     ///
     /// ```
     ///
-    pub fn get_auto_refresh(&self, index: &str) -> Result<bool, Box<Error>> {
+    pub fn get_auto_refresh(&'a mut self, index: &str) -> Result<bool, Box<Error>> {
         if index.is_empty() {
             return Err(Box::new(SdkError::new(
                 "IndexController::get_auto_refresh",
@@ -158,7 +158,7 @@ impl<'a> IndexController<'a> {
     /// use kuzzle_sdk::protocols::Http;
     /// use kuzzle_sdk::types::KuzzleOptions;
     ///
-    /// let kuzzle = Kuzzle::new(
+    /// let mut kuzzle = Kuzzle::new(
     ///     Http::new(
     ///         KuzzleOptions::new("localhost", 7512)
     ///     )
@@ -168,7 +168,7 @@ impl<'a> IndexController<'a> {
     ///
     /// ```
     ///
-    pub fn list(&self) -> Result<Vec<String>, Box<Error>> {
+    pub fn list(&'a mut self) -> Result<Vec<String>, Box<Error>> {
         let req: KuzzleRequest = KuzzleRequest::new("index", "list");
         let res = self.kuzzle().query(req, QueryOptions::new())?;
         match &res.error() {
@@ -196,7 +196,7 @@ impl<'a> IndexController<'a> {
     /// use kuzzle_sdk::protocols::Http;
     /// use kuzzle_sdk::types::KuzzleOptions;
     ///
-    /// let kuzzle = Kuzzle::new(
+    /// let mut kuzzle = Kuzzle::new(
     ///     Http::new(
     ///         KuzzleOptions::new("localhost", 7512)
     ///     )
@@ -206,7 +206,7 @@ impl<'a> IndexController<'a> {
     ///
     /// ```
     ///
-    pub fn mdelete(&self, indexes: Vec<String>) -> Result<Vec<String>, Box<Error>> {
+    pub fn mdelete(&'a mut self, indexes: Vec<String>) -> Result<Vec<String>, Box<Error>> {
         if indexes.is_empty() {
             return Err(Box::new(SdkError::new(
                 "IndexController::mDelete",
@@ -248,7 +248,7 @@ impl<'a> IndexController<'a> {
     /// use kuzzle_sdk::protocols::Http;
     /// use kuzzle_sdk::types::KuzzleOptions;
     ///
-    /// let kuzzle = Kuzzle::new(
+    /// let mut kuzzle = Kuzzle::new(
     ///     Http::new(
     ///         KuzzleOptions::new("localhost", 7512)
     ///     )
@@ -258,7 +258,7 @@ impl<'a> IndexController<'a> {
     ///
     /// ```
     ///
-    pub fn refresh(&self, index: &str) -> Result<(), Box<Error>> {
+    pub fn refresh(&'a mut self, index: &str) -> Result<(), Box<Error>> {
         if index.is_empty() {
             return Err(Box::new(SdkError::new(
                 "IndexController::refresh",
@@ -289,7 +289,7 @@ impl<'a> IndexController<'a> {
     /// use kuzzle_sdk::protocols::Http;
     /// use kuzzle_sdk::types::KuzzleOptions;
     ///
-    /// let kuzzle = Kuzzle::new(
+    /// let mut kuzzle = Kuzzle::new(
     ///     Http::new(
     ///         KuzzleOptions::new("localhost", 7512)
     ///     )
@@ -299,7 +299,7 @@ impl<'a> IndexController<'a> {
     ///
     /// ```
     ///
-    pub fn refresh_internal(&self) -> Result<(), Box<Error>> {
+    pub fn refresh_internal(&'a mut self) -> Result<(), Box<Error>> {
         let req: KuzzleRequest = KuzzleRequest::new("index", "refreshInternal");
         let res = self.kuzzle().query(req, QueryOptions::new())?;
         match &res.error() {
@@ -324,7 +324,7 @@ impl<'a> IndexController<'a> {
     /// use kuzzle_sdk::protocols::Http;
     /// use kuzzle_sdk::types::KuzzleOptions;
     ///
-    /// let kuzzle = Kuzzle::new(
+    /// let mut kuzzle = Kuzzle::new(
     ///     Http::new(
     ///         KuzzleOptions::new("localhost", 7512)
     ///     )
@@ -334,7 +334,7 @@ impl<'a> IndexController<'a> {
     ///
     /// ```
     ///
-    pub fn set_auto_refresh(&self, index: &str, auto_refresh: bool) -> Result<(), Box<Error>> {
+    pub fn set_auto_refresh(&'a mut self, index: &str, auto_refresh: bool) -> Result<(), Box<Error>> {
         if index.is_empty() {
             return Err(Box::new(SdkError::new(
                 "IndexController::set_auto_refresh",
@@ -352,8 +352,8 @@ impl<'a> IndexController<'a> {
         }
     }
 
-    fn kuzzle(&self) -> &'a Kuzzle {
-        &self.0
+    fn kuzzle(&'a mut self) -> &'a mut Kuzzle {
+        self.0
     }
 }
 
@@ -387,7 +387,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().create("ferris_index");
 
         assert!(res.is_ok());
@@ -416,7 +416,7 @@ mod tests {
                 }"#,
             ).create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().create("ferris_index");
 
         assert!(res.is_err());
@@ -424,7 +424,7 @@ mod tests {
 
     #[test]
     fn create_fail_empty_index_name() {
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().create("");
 
         assert!(res.is_err());
@@ -450,7 +450,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().delete("ferris_index");
 
         assert!(res.is_ok());
@@ -477,7 +477,7 @@ mod tests {
                 }"#,
             ).create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().delete("ferris_index");
 
         assert!(res.is_err());
@@ -485,7 +485,7 @@ mod tests {
 
     #[test]
     fn delete_fail_empty_index_name() {
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().delete("");
 
         assert!(res.is_err());
@@ -509,7 +509,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().exists("ferris_index");
 
         assert!(res.is_ok());
@@ -534,7 +534,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().exists("ferris_index");
 
         assert!(res.is_ok());
@@ -562,7 +562,7 @@ mod tests {
                 }"#,
             ).create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().exists("ferris_index");
 
         assert!(res.is_err());
@@ -570,7 +570,7 @@ mod tests {
 
     #[test]
     fn exists_fail_empty_index_name() {
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().exists("");
 
         assert!(res.is_err());
@@ -594,7 +594,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().get_auto_refresh("ferris_index");
 
         assert!(res.is_ok());
@@ -619,7 +619,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().get_auto_refresh("ferris_index");
 
         assert!(res.is_ok());
@@ -647,7 +647,7 @@ mod tests {
                 }"#,
             ).create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().get_auto_refresh("ferris_index");
 
         assert!(res.is_err());
@@ -655,7 +655,7 @@ mod tests {
 
     #[test]
     fn get_auto_refresh_fail_empty_index_name() {
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().get_auto_refresh("");
 
         assert!(res.is_err());
@@ -686,7 +686,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().list();
 
         assert!(res.is_ok());
@@ -716,7 +716,7 @@ mod tests {
                 }"#,
             ).create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().list();
 
         assert!(res.is_err());
@@ -747,7 +747,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().mdelete(vec![
             "ferris_the_crab".to_string(),
             "ferris_the_happy_crab".to_string(),
@@ -780,7 +780,7 @@ mod tests {
                 }"#,
             ).create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().mdelete(vec!["ferris_lair".to_string()]);
 
         assert!(res.is_err());
@@ -808,7 +808,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().mdelete(vec!["ferris_not_found".to_string()]);
 
         assert!(res.is_ok());
@@ -817,7 +817,7 @@ mod tests {
 
     #[test]
     fn mdelete_fail_empty_indexes_array() {
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().mdelete(vec![]);
 
         assert!(res.is_err());
@@ -847,7 +847,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().refresh("ferris_index");
 
         assert!(res.is_ok());
@@ -874,7 +874,7 @@ mod tests {
                 }"#,
             ).create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().refresh("ferris_index");
 
         assert!(res.is_err());
@@ -882,7 +882,7 @@ mod tests {
 
     #[test]
     fn refresh_fail_empty_index_name() {
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().refresh("");
 
         assert!(res.is_err());
@@ -908,7 +908,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().refresh_internal();
 
         assert!(res.is_ok());
@@ -935,7 +935,7 @@ mod tests {
                 }"#,
             ).create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().refresh_internal();
 
         assert!(res.is_err());
@@ -961,7 +961,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().set_auto_refresh("ferris_index", true);
 
         assert!(res.is_ok());
@@ -988,7 +988,7 @@ mod tests {
                 }"#,
             ).create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().set_auto_refresh("ferris_index", true);
 
         assert!(res.is_err());
@@ -996,7 +996,7 @@ mod tests {
 
     #[test]
     fn set_auto_refresh_fail_empty_index_name() {
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.index().set_auto_refresh("", true);
 
         assert!(res.is_err());

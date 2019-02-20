@@ -3,7 +3,7 @@ use crate::types::{KuzzleRequest, QueryOptions, SdkError};
 use serde_json::{to_value, Map, Value};
 use std::error::Error;
 
-pub struct ServerController<'a>(pub &'a Kuzzle);
+pub struct ServerController<'a>(pub &'a mut Kuzzle);
 
 impl<'a> ServerController<'a> {
     /// Checks that an administrator account exists.
@@ -15,7 +15,7 @@ impl<'a> ServerController<'a> {
     /// use kuzzle_sdk::protocols::Http;
     /// use kuzzle_sdk::types::KuzzleOptions;
     ///
-    /// let kuzzle = Kuzzle::new(
+    /// let mut kuzzle = Kuzzle::new(
     ///     Http::new(
     ///         KuzzleOptions::new("localhost", 7512)
     ///     )
@@ -25,7 +25,7 @@ impl<'a> ServerController<'a> {
     ///
     /// ```
     ///
-    pub fn admin_exists(&self) -> Result<bool, Box<Error>> {
+    pub fn admin_exists(&'a mut self) -> Result<bool, Box<Error>> {
         let req: KuzzleRequest = KuzzleRequest::new("server", "adminExists");
         let res = self.kuzzle().query(req, QueryOptions::new())?;
         match &res.error() {
@@ -50,7 +50,7 @@ impl<'a> ServerController<'a> {
     /// use kuzzle_sdk::protocols::Http;
     /// use kuzzle_sdk::types::KuzzleOptions;
     ///
-    /// let kuzzle = Kuzzle::new(
+    /// let mut kuzzle = Kuzzle::new(
     ///     Http::new(
     ///         KuzzleOptions::new("localhost", 7512)
     ///     )
@@ -60,7 +60,7 @@ impl<'a> ServerController<'a> {
     ///
     /// ```
     ///
-    pub fn get_all_stats(&self) -> Result<Map<String, Value>, Box<Error>> {
+    pub fn get_all_stats(&'a mut self) -> Result<Map<String, Value>, Box<Error>> {
         let req: KuzzleRequest = KuzzleRequest::new("server", "getAllStats");
         let res = self.kuzzle().query(req, QueryOptions::new())?;
         match &res.error() {
@@ -81,7 +81,7 @@ impl<'a> ServerController<'a> {
     /// use kuzzle_sdk::protocols::Http;
     /// use kuzzle_sdk::types::KuzzleOptions;
     ///
-    /// let kuzzle = Kuzzle::new(
+    /// let mut kuzzle = Kuzzle::new(
     ///     Http::new(
     ///         KuzzleOptions::new("localhost", 7512)
     ///     )
@@ -91,7 +91,7 @@ impl<'a> ServerController<'a> {
     ///
     /// ```
     ///
-    pub fn get_config(&self) -> Result<Map<String, Value>, Box<Error>> {
+    pub fn get_config(&'a mut self) -> Result<Map<String, Value>, Box<Error>> {
         let req: KuzzleRequest = KuzzleRequest::new("server", "getConfig");
         let res = self.kuzzle().query(req, QueryOptions::new())?;
         match &res.error() {
@@ -109,7 +109,7 @@ impl<'a> ServerController<'a> {
     /// use kuzzle_sdk::protocols::Http;
     /// use kuzzle_sdk::types::KuzzleOptions;
     ///
-    /// let kuzzle = Kuzzle::new(
+    /// let mut kuzzle = Kuzzle::new(
     ///     Http::new(
     ///         KuzzleOptions::new("localhost", 7512)
     ///     )
@@ -119,7 +119,7 @@ impl<'a> ServerController<'a> {
     ///
     /// ```
     ///
-    pub fn get_last_stats(&self) -> Result<Map<String, Value>, Box<Error>> {
+    pub fn get_last_stats(&'a mut self) -> Result<Map<String, Value>, Box<Error>> {
         let req: KuzzleRequest = KuzzleRequest::new("server", "getLastStats");
         let res = self.kuzzle().query(req, QueryOptions::new())?;
         match &res.error() {
@@ -137,7 +137,7 @@ impl<'a> ServerController<'a> {
     /// use kuzzle_sdk::protocols::Http;
     /// use kuzzle_sdk::types::KuzzleOptions;
     ///
-    /// let kuzzle = Kuzzle::new(
+    /// let mut kuzzle = Kuzzle::new(
     ///     Http::new(
     ///         KuzzleOptions::new("localhost", 7512)
     ///     )
@@ -147,7 +147,7 @@ impl<'a> ServerController<'a> {
     ///
     /// ```
     ///
-    pub fn get_stats(&self, from: i64, to: i64) -> Result<Map<String, Value>, Box<Error>> {
+    pub fn get_stats(&'a mut self, from: i64, to: i64) -> Result<Map<String, Value>, Box<Error>> {
         if from.to_string().len() != 13 || to.to_string().len() != 13 {
             return Err(Box::new(SdkError::new(
                 "ServerController::get_stats",
@@ -175,7 +175,7 @@ impl<'a> ServerController<'a> {
     /// use kuzzle_sdk::protocols::Http;
     /// use kuzzle_sdk::types::KuzzleOptions;
     ///
-    /// let kuzzle = Kuzzle::new(
+    /// let mut kuzzle = Kuzzle::new(
     ///     Http::new(
     ///         KuzzleOptions::new("localhost", 7512)
     ///     )
@@ -185,7 +185,7 @@ impl<'a> ServerController<'a> {
     ///
     /// ```
     ///
-    pub fn info(&self) -> Result<Map<String, Value>, Box<Error>> {
+    pub fn info(&'a mut self) -> Result<Map<String, Value>, Box<Error>> {
         let req: KuzzleRequest = KuzzleRequest::new("server", "info");
         let res = self.kuzzle().query(req, QueryOptions::new())?;
         match &res.error() {
@@ -203,7 +203,7 @@ impl<'a> ServerController<'a> {
     /// use kuzzle_sdk::protocols::Http;
     /// use kuzzle_sdk::types::KuzzleOptions;
     ///
-    /// let kuzzle = Kuzzle::new(
+    /// let mut kuzzle = Kuzzle::new(
     ///     Http::new(
     ///         KuzzleOptions::new("localhost", 7512)
     ///     )
@@ -213,7 +213,7 @@ impl<'a> ServerController<'a> {
     ///
     /// ```
     ///
-    pub fn now(&self) -> Result<u64, Box<Error>> {
+    pub fn now(&'a mut self) -> Result<u64, Box<Error>> {
         let req: KuzzleRequest = KuzzleRequest::new("server", "now");
         let res = self.kuzzle().query(req, QueryOptions::new())?;
         match &res.error() {
@@ -230,8 +230,8 @@ impl<'a> ServerController<'a> {
         }
     }
 
-    fn kuzzle(&self) -> &'a Kuzzle {
-        &self.0
+    fn kuzzle(&'a mut self) -> &'a mut Kuzzle {
+        self.0
     }
 }
 
@@ -264,7 +264,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.server().admin_exists();
 
         assert!(res.is_ok());
@@ -295,7 +295,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.server().admin_exists();
 
         assert!(res.is_err());
@@ -343,7 +343,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.server().get_all_stats();
 
         assert!(res.is_ok());
@@ -394,7 +394,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.server().get_all_stats();
 
         assert!(res.is_err());
@@ -441,7 +441,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.server().get_config();
 
         assert!(res.is_ok());
@@ -485,7 +485,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.server().get_config();
 
         assert!(res.is_err());
@@ -528,7 +528,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.server().get_last_stats();
         assert!(res.is_ok());
         let last_stats = res.unwrap();
@@ -574,7 +574,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.server().get_last_stats();
 
         assert!(res.is_err());
@@ -620,10 +620,8 @@ mod tests {
             )
             .create();
 
-        println!("{:?}", _m);
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.server().get_stats(1550439618398, 1550436918273);
-        println!("{:?}", res);
         assert!(res.is_ok());
         let stats = res.unwrap();
         assert_eq!(
@@ -671,7 +669,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.server().get_stats(1550439618398, 1550436918273);
 
         assert!(res.is_err());
@@ -679,7 +677,7 @@ mod tests {
 
     #[test]
     fn get_stats_fail_all_bad_timestamp_format() {
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.server().get_stats(1550439618, 150436918273);
 
         assert!(res.is_err());
@@ -687,7 +685,7 @@ mod tests {
 
     #[test]
     fn get_stats_fail_one_bad_timestamp_format() {
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.server().get_stats(155043961845, 150436918273);
 
         assert!(res.is_err());
@@ -754,7 +752,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.server().info();
         assert!(res.is_ok());
         let info = res.unwrap();
@@ -799,7 +797,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.server().info();
 
         assert!(res.is_err());
@@ -827,7 +825,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.server().now();
 
         assert!(res.is_ok());
@@ -858,7 +856,7 @@ mod tests {
             )
             .create();
 
-        let k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
         let res = k.server().now();
 
         assert!(res.is_err());

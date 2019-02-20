@@ -56,47 +56,47 @@ impl Kuzzle {
     }
 
     /// Kuzzle AuthController's getter
-    pub fn auth(&self) -> AuthController {
-        AuthController(&self)
+    pub fn auth(&mut self) -> AuthController {
+        AuthController(self)
     }
 
     /// Kuzzle BulkController's getter
-    pub fn bulk(&self) -> BulkController {
-        BulkController(&self)
+    pub fn bulk(&mut self) -> BulkController {
+        BulkController(self)
     }
 
     /// Kuzzle CollectionController's getter
-    pub fn collection(&self) -> CollectionController {
-        CollectionController(&self)
+    pub fn collection(&mut self) -> CollectionController {
+        CollectionController(self)
     }
 
     /// Kuzzle DocumentController's getter
-    pub fn document(&self) -> DocumentController {
-        DocumentController(&self)
+    pub fn document(&mut self) -> DocumentController {
+        DocumentController(self)
     }
 
     /// Kuzzle IndexController's getter
-    pub fn index(&self) -> IndexController {
-        IndexController(&self)
+    pub fn index(&mut self) -> IndexController {
+        IndexController(self)
     }
 
     /// Kuzzle MemoryStorageController's getter
-    pub fn ms(&self) -> MemoryStorageController {
-        MemoryStorageController(&self)
+    pub fn ms(&mut self) -> MemoryStorageController {
+        MemoryStorageController(self)
     }
 
     /// Kuzzle RealtimeController's getter
-    pub fn realtime(&self) -> RealtimeController {
-        RealtimeController(&self)
+    pub fn realtime(&mut self) -> RealtimeController {
+        RealtimeController(self)
     }
 
     /// Kuzzle SecurityController's getter
-    pub fn security(&self) -> SecurityController {
-        SecurityController(&self)
+    pub fn security(&mut self) -> SecurityController {
+        SecurityController(self)
     }
 
     /// Kuzzle ServerController's getter
-    pub fn server(&self) -> ServerController {
-        ServerController(&self)
+    pub fn server(&mut self) -> ServerController {
+        ServerController(self)
     }
 }

@@ -1,15 +1,15 @@
 use crate::kuzzle::Kuzzle;
 use crate::types::{KuzzleRequest, QueryOptions};
 
-pub struct RealtimeController<'a>(pub &'a Kuzzle);
+pub struct RealtimeController<'a>(pub &'a mut Kuzzle);
 
 impl<'a> RealtimeController<'a> {
-    pub fn subscribe(&self, options: QueryOptions) {
+    pub fn subscribe(&'a mut self, options: QueryOptions) {
         let req: KuzzleRequest = KuzzleRequest::new("realtime", "subscribe");
         self.kuzzle().query(req, options).is_ok();
     }
 
-    fn kuzzle(&self) -> &'a Kuzzle {
-        &self.0
+    fn kuzzle(&'a mut self) -> &'a mut Kuzzle {
+        self.0
     }
 }
