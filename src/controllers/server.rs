@@ -1,6 +1,6 @@
 use crate::kuzzle::Kuzzle;
 use crate::types::{KuzzleRequest, QueryOptions, SdkError};
-use serde_json::{to_value, Map, Value};
+use serde_json::{Map, Value};
 use std::error::Error;
 
 pub struct ServerController<'a>(pub &'a mut Kuzzle);
@@ -156,8 +156,8 @@ impl<'a> ServerController<'a> {
         }
 
         let req: KuzzleRequest = KuzzleRequest::new("server", "getStats")
-            .add_to_query_strings("startTime".to_string(), to_value(from).unwrap())
-            .add_to_query_strings("stopTime".to_string(), to_value(to).unwrap());
+            .add_to_query_strings("startTime", serde_json::to_value(from)?)
+            .add_to_query_strings("stopTime", serde_json::to_value(to)?);
         let res = self.kuzzle().query(req, QueryOptions::new())?;
         match &res.error() {
             None => Ok(res.result().as_object().unwrap().clone()),
@@ -243,7 +243,7 @@ mod tests {
     use mockito;
 
     #[test]
-    fn admin_exists_ok_true() {
+    fn admin_exists_ok() {
         let _m = mockito::mock("GET", "/_adminExists")
             .with_status(200)
             .with_header("content-type", "application/json")
@@ -265,6 +265,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.server().admin_exists();
 
         assert!(res.is_ok());
@@ -296,6 +297,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.server().admin_exists();
 
         assert!(res.is_err());
@@ -344,6 +346,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.server().get_all_stats();
 
         assert!(res.is_ok());
@@ -395,6 +398,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.server().get_all_stats();
 
         assert!(res.is_err());
@@ -442,6 +446,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.server().get_config();
 
         assert!(res.is_ok());
@@ -486,6 +491,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.server().get_config();
 
         assert!(res.is_err());
@@ -529,6 +535,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.server().get_last_stats();
         assert!(res.is_ok());
         let last_stats = res.unwrap();
@@ -575,6 +582,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.server().get_last_stats();
 
         assert!(res.is_err());
@@ -621,6 +629,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.server().get_stats(1550439618398, 1550436918273);
         assert!(res.is_ok());
         let stats = res.unwrap();
@@ -670,6 +679,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.server().get_stats(1550439618398, 1550436918273);
 
         assert!(res.is_err());
@@ -678,6 +688,7 @@ mod tests {
     #[test]
     fn get_stats_fail_all_bad_timestamp_format() {
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.server().get_stats(1550439618, 150436918273);
 
         assert!(res.is_err());
@@ -686,6 +697,7 @@ mod tests {
     #[test]
     fn get_stats_fail_one_bad_timestamp_format() {
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.server().get_stats(155043961845, 150436918273);
 
         assert!(res.is_err());
@@ -753,6 +765,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.server().info();
         assert!(res.is_ok());
         let info = res.unwrap();
@@ -798,6 +811,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.server().info();
 
         assert!(res.is_err());
@@ -826,6 +840,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.server().now();
 
         assert!(res.is_ok());
@@ -857,6 +872,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.server().now();
 
         assert!(res.is_err());

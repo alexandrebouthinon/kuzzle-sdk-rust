@@ -6,7 +6,7 @@ use std::error::Error;
 /// Kuzzle is the Kuzzle SDK client used to dial with the Kuzzle server.
 pub struct Kuzzle {
     _protocol: Box<Protocol>,
-    _jwt: String,
+    _jwt: Option<String>,
 }
 
 impl Kuzzle {
@@ -31,8 +31,16 @@ impl Kuzzle {
     {
         Kuzzle {
             _protocol: Box::new(protocol),
-            _jwt: String::new(),
+            _jwt: None,
         }
+    }
+
+    pub fn connect(&mut self) -> Result<(), Box<Error>> {
+        if self._protocol.is_ready() {
+            return Ok(());
+        }
+
+        self._protocol.connect()
     }
 
     /// Execute the given KuzzleRequest and returns a `Result` which contains
@@ -47,12 +55,12 @@ impl Kuzzle {
 
     /// Kuzzle JWT getter
     pub fn jwt(&self) -> String {
-        self._jwt.clone()
+        self._jwt.clone().unwrap_or(String::new())
     }
 
     /// Kuzzle JWT setter
     pub fn set_jwt(&mut self, jwt: String) {
-        self._jwt = jwt;
+        self._jwt = Some(jwt);
     }
 
     /// Kuzzle AuthController's getter

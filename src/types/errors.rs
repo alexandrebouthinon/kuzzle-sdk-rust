@@ -46,8 +46,11 @@ impl KuzzleError {
     }
 
     /// KuzzleError stack getter.
-    pub fn stack(&self) -> &Option<String> {
-        &self.stack
+    pub fn stack(&self) -> String {
+        match &self.stack {
+            Some(stack) => stack.clone(),
+            None => String::new(),
+        }
     }
 }
 

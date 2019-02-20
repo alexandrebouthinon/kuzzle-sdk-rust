@@ -30,12 +30,18 @@ impl KuzzleRequest {
         &self._action
     }
 
-    pub fn index(&self) -> &Option<String> {
-        &self._index
+    pub fn index(&self) -> String {
+        match &self._index {
+            Some(index) => index.clone(),
+            None => String::new(),
+        }
     }
 
-    pub fn collection(&self) -> &Option<String> {
-        &self._collection
+    pub fn collection(&self) -> String {
+        match &self._collection {
+            Some(collection) => collection.clone(),
+            None => String::new(),
+        }
     }
 
     pub fn body(&self) -> &HashMap<String, Value> {
@@ -51,13 +57,13 @@ impl KuzzleRequest {
         self
     }
 
-    pub fn add_to_body(mut self, key: String, value: Value) -> Self {
-        self._body.insert(key, value);
+    pub fn add_to_body(mut self, key: &str, value: Value) -> Self {
+        self._body.insert(key.to_string(), value);
         self
     }
 
-    pub fn add_to_query_strings(mut self, key: String, value: Value) -> Self {
-        self._query_strings.insert(key, value);
+    pub fn add_to_query_strings(mut self, key: &str, value: Value) -> Self {
+        self._query_strings.insert(key.to_string(), value);
         self
     }
 }

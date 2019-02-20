@@ -1,14 +1,18 @@
-use crate::protocols::Protocol;
+use crate::protocols::{Protocol, State};
 use crate::types::{KuzzleOptions, KuzzleRequest, KuzzleResponse, QueryOptions};
 use std::error::Error;
 
 pub struct Websocket {
     _options: KuzzleOptions,
+    _state: State,
 }
 
 impl Websocket {
     pub fn new(options: KuzzleOptions) -> Websocket {
-        Websocket { _options: options }
+        Websocket {
+            _options: options,
+            _state: State::Offline,
+        }
     }
 }
 
@@ -21,7 +25,14 @@ impl Protocol for Websocket {
         unimplemented!();
     }
 
-    fn connect(&self) {
+    fn is_ready(&self) -> bool {
+        match self._state {
+            State::Ready => true,
+            State::Offline => false,
+        }
+    }
+
+    fn connect(&mut self) -> Result<(), Box<Error>> {
         unimplemented!();
     }
 
@@ -33,27 +44,7 @@ impl Protocol for Websocket {
         unimplemented!();
     }
 
-    fn close(&self) {
-        unimplemented!();
-    }
-
-    fn state(&self) {
-        unimplemented!();
-    }
-
-    fn request_history(&self) {
-        unimplemented!();
-    }
-
-    fn start_queuing(&self) {
-        unimplemented!();
-    }
-
-    fn stop_queuing(&self) {
-        unimplemented!();
-    }
-
-    fn clear_queue(&self) {
-        unimplemented!();
+    fn close(&mut self) {
+        self._state = State::Offline;
     }
 }

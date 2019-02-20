@@ -39,23 +39,35 @@ impl KuzzleResponse {
     }
 
     /// KuzzleResponse controller getter.
-    pub fn controller(&self) -> &Option<String> {
-        &self.controller
+    pub fn controller(&self) -> String {
+        match &self.controller {
+            Some(controller) => controller.clone(),
+            None => String::new(),
+        }
     }
 
     /// KuzzleResponse action getter.
-    pub fn action(&self) -> &Option<String> {
-        &self.action
+    pub fn action(&self) -> String {
+        match &self.action {
+            Some(action) => action.clone(),
+            None => String::new(),
+        }
     }
 
     /// KuzzleResponse index getter.
-    pub fn index(&self) -> &Option<String> {
-        &self.index
+    pub fn index(&self) -> String {
+        match &self.index {
+            Some(index) => index.clone(),
+            None => String::new(),
+        }
     }
 
     /// KuzzleResponse collection getter.
-    pub fn collection(&self) -> &Option<String> {
-        &self.collection
+    pub fn collection(&self) -> String {
+        match &self.collection {
+            Some(collection) => collection.clone(),
+            None => String::new(),
+        }
     }
 
     /// KuzzleResponse result getter.
@@ -64,17 +76,26 @@ impl KuzzleResponse {
     }
 
     /// KuzzleResponse volatile getter.
-    pub fn volatile(&self) -> &Option<HashMap<String, Value>> {
-        &self.volatile
+    pub fn volatile(&self) -> HashMap<String, Value> {
+        match &self.volatile {
+            Some(volatile) => volatile.clone(),
+            None => HashMap::new(),
+        }
     }
 
     /// KuzzleResponse room_id getter.
-    pub fn room_id(&self) -> &Option<String> {
-        &self.room_id
+    pub fn room_id(&self) -> String {
+        match &self.room_id {
+            Some(id) => id.clone(),
+            None => String::new(),
+        }
     }
 
     /// KuzzleResponse channel getter.
-    pub fn channel(&self) -> &Option<String> {
-        &self.channel
+    pub fn channel(&self) -> String {
+        match &self.channel {
+            Some(channel) => channel.clone(),
+            None => String::new(),
+        }
     }
 }

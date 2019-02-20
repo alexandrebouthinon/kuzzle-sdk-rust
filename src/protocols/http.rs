@@ -8,12 +8,14 @@ pub struct Route {
     pub verb: String,
 }
 
+use crate::protocols::State;
 use crate::types::KuzzleOptions;
 
 pub struct Http {
     _client: Client,
     _options: KuzzleOptions,
     _routes: Routes,
+    _state: State,
 }
 
 use std::fs::File;
@@ -39,29 +41,39 @@ impl Http {
             _client: Client::new(),
             _options: options,
             _routes: Http::read_routes_from_file(".http_routes.json"),
+            _state: State::Offline,
         }
     }
 
-    fn _get_route(&self, controller: &str, action: &str) -> Route {
-        self._routes
-            .get(controller)
-            .unwrap()
-            .get(action)
-            .unwrap()
-            .clone()
+    fn _get_route(&self, controller: &str, action: &str) -> Result<Route, Box<Error>> {
+        match self._routes.get(controller) {
+            Some(ctrl) => match ctrl.get(action) {
+                Some(route) => Ok(route.clone()),
+                None => Err(Box::new(SdkError::new(
+                    "Http::_get_route",
+                    &format!(
+                        "Unable to find route for (controller/action) {}/{}",
+                        controller, action
+                    ),
+                ))
+                .clone()),
+            },
+            None => Err(Box::new(SdkError::new(
+                "Http::_get_route",
+                &format!(
+                    "Unable to find route for (controller/action) {}/{}",
+                    controller, action
+                ),
+            ))
+            .clone()),
+        }
     }
 
     fn read_routes_from_file(file: &str) -> Routes {
-        let mut file = match File::open(file) {
-            Ok(fd) => fd,
-            Err(err) => panic!("{}", err),
-        };
+        let mut file = File::open(file).unwrap();
 
         let mut contents = String::new();
-        match file.read_to_string(&mut contents) {
-            Ok(_) => {}
-            Err(err) => panic!("{}", err),
-        };
+        file.read_to_string(&mut contents).unwrap();
 
         // Deserialize and print Rust data structure.
         let data: Routes = match serde_json::from_str(&contents) {
@@ -74,7 +86,7 @@ impl Http {
 }
 
 use crate::protocols::Protocol;
-use crate::types::{KuzzleRequest, KuzzleResponse, QueryOptions};
+use crate::types::{KuzzleRequest, KuzzleResponse, QueryOptions, SdkError};
 
 use reqwest::{Client, Method, Url};
 use std::error::Error;
@@ -83,28 +95,58 @@ use std::error::Error;
 use mockito;
 
 impl Protocol for Http {
-    fn once(&self) {
-        unimplemented!();
+    fn is_ready(&self) -> bool {
+        match self._state {
+            State::Ready => true,
+            State::Offline => false,
+        }
     }
-    fn listener_count(&self) {
-        unimplemented!();
+
+    fn close(&mut self) {
+        self._state = State::Offline;
     }
-    fn connect(&self) {
-        unimplemented!();
+
+    fn connect(&mut self) -> Result<(), Box<Error>> {
+        if self._state == State::Ready {
+            return Ok(());
+        }
+
+        #[cfg(not(test))]
+        let url = Url::parse(&format!(
+            "http://{}:{}",
+            self._options.host(),
+            self._options.port()
+        ))?;
+
+        #[cfg(test)]
+        let url = &mockito::server_url();
+
+        match reqwest::get(url) {
+            Ok(_) => {
+                self._state = State::Ready;
+                Ok(())
+            }
+            Err(err) => Err(Box::new(err)),
+        }
     }
+
     fn send(
         &self,
         req: KuzzleRequest,
         _query_options: QueryOptions,
     ) -> Result<KuzzleResponse, Box<Error>> {
-        let kuzzle_route = self._get_route(req.controller(), req.action());
+        if self._state == State::Offline {
+            return Err(Box::new(SdkError::new(
+                "Http::send",
+                "Unable to execute request: not connected to a Kuzzle server.",
+            )));
+        }
+
+        let kuzzle_route = self._get_route(req.controller(), req.action())?;
         let route = kuzzle_route
             .url
-            .replace(":index", &req.index().clone().unwrap_or(String::new()))
-            .replace(
-                ":collection",
-                &req.collection().clone().unwrap_or(String::new()),
-            );
+            .replace(":index", &req.index())
+            .replace(":collection", &req.collection());
 
         #[cfg(not(test))]
         let host = &format!("http://{}:{}", self._options.host(), self._options.port(),);
@@ -127,22 +169,12 @@ impl Protocol for Http {
         let response: KuzzleResponse = request.send()?.json()?;
         Ok(response)
     }
-    fn close(&self) {
+
+    fn once(&self) {
         unimplemented!();
     }
-    fn state(&self) {
-        unimplemented!();
-    }
-    fn request_history(&self) {
-        unimplemented!();
-    }
-    fn start_queuing(&self) {
-        unimplemented!();
-    }
-    fn stop_queuing(&self) {
-        unimplemented!();
-    }
-    fn clear_queue(&self) {
+
+    fn listener_count(&self) {
         unimplemented!();
     }
 }

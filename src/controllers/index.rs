@@ -1,6 +1,7 @@
 use crate::kuzzle::Kuzzle;
 use crate::types::{KuzzleRequest, QueryOptions, SdkError};
-use serde_json::to_value;
+use serde_json;
+
 use std::error::Error;
 
 pub struct IndexController<'a>(pub &'a mut Kuzzle);
@@ -215,7 +216,7 @@ impl<'a> IndexController<'a> {
         }
 
         let req: KuzzleRequest = KuzzleRequest::new("index", "mDelete")
-            .add_to_body("indexes".to_string(), to_value(indexes).unwrap());
+            .add_to_body("indexes", serde_json::to_value(indexes)?);
         let res = self.kuzzle().query(req, QueryOptions::new())?;
         match &res.error() {
             None => Ok(res
@@ -334,7 +335,11 @@ impl<'a> IndexController<'a> {
     ///
     /// ```
     ///
-    pub fn set_auto_refresh(&'a mut self, index: &str, auto_refresh: bool) -> Result<(), Box<Error>> {
+    pub fn set_auto_refresh(
+        &'a mut self,
+        index: &str,
+        auto_refresh: bool,
+    ) -> Result<(), Box<Error>> {
         if index.is_empty() {
             return Err(Box::new(SdkError::new(
                 "IndexController::set_auto_refresh",
@@ -344,7 +349,7 @@ impl<'a> IndexController<'a> {
 
         let req: KuzzleRequest = KuzzleRequest::new("index", "setAutoRefresh")
             .set_index(index)
-            .add_to_body("autoRefresh".to_string(), to_value(auto_refresh).unwrap());
+            .add_to_body("autoRefresh", serde_json::to_value(auto_refresh)?);
         let res = self.kuzzle().query(req, QueryOptions::new())?;
         match &res.error() {
             None => Ok(()),
@@ -388,6 +393,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().create("ferris_index");
 
         assert!(res.is_ok());
@@ -417,6 +423,7 @@ mod tests {
             ).create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().create("ferris_index");
 
         assert!(res.is_err());
@@ -425,6 +432,7 @@ mod tests {
     #[test]
     fn create_fail_empty_index_name() {
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().create("");
 
         assert!(res.is_err());
@@ -451,6 +459,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().delete("ferris_index");
 
         assert!(res.is_ok());
@@ -478,6 +487,7 @@ mod tests {
             ).create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().delete("ferris_index");
 
         assert!(res.is_err());
@@ -486,6 +496,7 @@ mod tests {
     #[test]
     fn delete_fail_empty_index_name() {
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().delete("");
 
         assert!(res.is_err());
@@ -510,6 +521,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().exists("ferris_index");
 
         assert!(res.is_ok());
@@ -535,6 +547,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().exists("ferris_index");
 
         assert!(res.is_ok());
@@ -563,6 +576,7 @@ mod tests {
             ).create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().exists("ferris_index");
 
         assert!(res.is_err());
@@ -571,6 +585,7 @@ mod tests {
     #[test]
     fn exists_fail_empty_index_name() {
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().exists("");
 
         assert!(res.is_err());
@@ -595,6 +610,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().get_auto_refresh("ferris_index");
 
         assert!(res.is_ok());
@@ -620,6 +636,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().get_auto_refresh("ferris_index");
 
         assert!(res.is_ok());
@@ -648,6 +665,7 @@ mod tests {
             ).create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().get_auto_refresh("ferris_index");
 
         assert!(res.is_err());
@@ -656,6 +674,7 @@ mod tests {
     #[test]
     fn get_auto_refresh_fail_empty_index_name() {
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().get_auto_refresh("");
 
         assert!(res.is_err());
@@ -687,6 +706,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().list();
 
         assert!(res.is_ok());
@@ -717,6 +737,7 @@ mod tests {
             ).create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().list();
 
         assert!(res.is_err());
@@ -748,6 +769,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().mdelete(vec![
             "ferris_the_crab".to_string(),
             "ferris_the_happy_crab".to_string(),
@@ -781,6 +803,7 @@ mod tests {
             ).create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().mdelete(vec!["ferris_lair".to_string()]);
 
         assert!(res.is_err());
@@ -809,6 +832,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().mdelete(vec!["ferris_not_found".to_string()]);
 
         assert!(res.is_ok());
@@ -818,6 +842,7 @@ mod tests {
     #[test]
     fn mdelete_fail_empty_indexes_array() {
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().mdelete(vec![]);
 
         assert!(res.is_err());
@@ -848,6 +873,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().refresh("ferris_index");
 
         assert!(res.is_ok());
@@ -875,6 +901,7 @@ mod tests {
             ).create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().refresh("ferris_index");
 
         assert!(res.is_err());
@@ -883,6 +910,7 @@ mod tests {
     #[test]
     fn refresh_fail_empty_index_name() {
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().refresh("");
 
         assert!(res.is_err());
@@ -909,6 +937,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().refresh_internal();
 
         assert!(res.is_ok());
@@ -936,6 +965,7 @@ mod tests {
             ).create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().refresh_internal();
 
         assert!(res.is_err());
@@ -962,6 +992,7 @@ mod tests {
             .create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().set_auto_refresh("ferris_index", true);
 
         assert!(res.is_ok());
@@ -989,6 +1020,7 @@ mod tests {
             ).create();
 
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().set_auto_refresh("ferris_index", true);
 
         assert!(res.is_err());
@@ -997,6 +1029,7 @@ mod tests {
     #[test]
     fn set_auto_refresh_fail_empty_index_name() {
         let mut k = Kuzzle::new(Http::new(KuzzleOptions::new("localhost", 7512)));
+        k.connect().expect("Unable to connect to Kuzzle server");
         let res = k.index().set_auto_refresh("", true);
 
         assert!(res.is_err());
