@@ -71,7 +71,7 @@ fn main() {
   match kuzzle.server().now() {
       // This will display the current timestamp in Epoch millisecond format
       Ok(timestamp) => println!("{}", timestamp),
-      Err(error) => eprintln!("{}", error);
+      Err(error) => eprintln!("{}", error),
   }
 }
 ```
@@ -83,8 +83,8 @@ fn main() {
 </p>
 
 <p align="center">
-  <a href="https://waffle.io/alexandrebouthinon/kuzzle_sdk/metrics/throughput">
-    <img src="https://graphs.waffle.io/alexandrebouthinon/kuzzle_sdk/throughput.svg" alt="Throughput Graph">
+  <a href="https://waffle.io/alexandrebouthinon/kuzzle-sdk-rust/metrics/throughput">
+    <img src="https://graphs.waffle.io/alexandrebouthinon/kuzzle-sdk-rust/throughput.svg" alt="Throughput Graph">
   </a>
 </p>
 
