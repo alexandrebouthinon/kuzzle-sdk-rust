@@ -55,8 +55,7 @@ impl Http {
                         "Unable to find route for (controller/action) {}/{}",
                         controller, action
                     ),
-                ))
-                .clone()),
+                ))),
             },
             None => Err(Box::new(SdkError::new(
                 "Http::_get_route",
@@ -64,8 +63,7 @@ impl Http {
                     "Unable to find route for (controller/action) {}/{}",
                     controller, action
                 ),
-            ))
-            .clone()),
+            ))),
         }
     }
 
@@ -146,7 +144,8 @@ impl Protocol for Http {
         let route = kuzzle_route
             .url
             .replace(":index", &req.index())
-            .replace(":collection", &req.collection());
+            .replace(":collection", &req.collection())
+            .replace(":strategy", &req.strategy());
 
         #[cfg(not(test))]
         let host = &format!("http://{}:{}", self._options.host(), self._options.port(),);
@@ -166,7 +165,14 @@ impl Protocol for Http {
             request = request.query(&req.query_strings());
         }
 
-        let response: KuzzleResponse = request.send()?.json()?;
+        if !req.jwt().is_empty() {
+            request = request.bearer_auth(&req.jwt());
+        }
+
+        let mut raw_response = request.send()?;
+        dbg!(&raw_response);
+        let response : KuzzleResponse = raw_response.json()?;
+
         Ok(response)
     }
 

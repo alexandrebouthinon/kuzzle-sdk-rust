@@ -1,11 +1,14 @@
 use serde_json::Value;
 use std::collections::HashMap;
 
+#[derive(Clone)]
 pub struct KuzzleRequest {
     _controller: String,
     _action: String,
     _index: Option<String>,
     _collection: Option<String>,
+    _strategy: Option<String>,
+    _jwt: Option<String>,
     _body: HashMap<String, Value>,
     _query_strings: HashMap<String, Value>,
 }
@@ -17,6 +20,8 @@ impl KuzzleRequest {
             _action: action.to_string(),
             _index: None,
             _collection: None,
+            _strategy: None,
+            _jwt: None,
             _body: HashMap::new(),
             _query_strings: HashMap::new(),
         }
@@ -44,6 +49,20 @@ impl KuzzleRequest {
         }
     }
 
+    pub fn strategy(&self) -> String {
+        match &self._strategy {
+            Some(strategy) => strategy.clone(),
+            None => String::new(),
+        }
+    }
+
+    pub fn jwt(&self) -> String {
+        match &self._jwt {
+            Some(jwt) => jwt.clone(),
+            None => String::new(),
+        }
+    }
+
     pub fn body(&self) -> &HashMap<String, Value> {
         &self._body
     }
@@ -54,6 +73,21 @@ impl KuzzleRequest {
 
     pub fn set_index(mut self, index: &str) -> Self {
         self._index = Some(index.to_string());
+        self
+    }
+
+    pub fn set_strategy(mut self, strategy: &str) -> Self {
+        self._strategy = Some(strategy.to_string());
+        self
+    }
+
+    pub fn set_jwt(mut self, jwt: String) -> Self {
+        self._jwt = Some(jwt);
+        self
+    }
+
+    pub fn set_body(mut self, body: HashMap<String, Value>) -> Self {
+        self._body = body;
         self
     }
 

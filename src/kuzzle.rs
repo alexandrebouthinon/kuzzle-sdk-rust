@@ -50,7 +50,13 @@ impl Kuzzle {
         req: KuzzleRequest,
         options: QueryOptions,
     ) -> Result<KuzzleResponse, Box<Error>> {
-        self._protocol.send(req, options)
+        let request = match &self._jwt {
+            Some(jwt) => req.clone().set_jwt(jwt.to_string()),
+            None => req.clone(),
+        };
+
+        self._protocol.send(request, options)
+
     }
 
     /// Kuzzle JWT getter
